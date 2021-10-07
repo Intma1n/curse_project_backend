@@ -1,0 +1,49 @@
+Список всех пользователей:
+get post put delete
+{
+	id
+	name
+	password
+	surname
+	email
+	type_
+}
+Список всего оборудования:
+get post put delete
+{
+	id
+	name
+	access_type
+	is_availsal;dkasl;kd;lasdk
+	type_equip
+}
+Список всех реконструкций:
+get post put delete
+{
+	id
+	description
+	place
+	payment
+	id_org
+	time
+}
+Сколько у нас всего денег
+get
+{
+	sum(budget_log)
+}
+Зарегаться на регистрацию:
+post
+{
+	id_user
+	id_rec
+	time
+}
+Подать заявку на оборудование:
+post
+{
+	id_req
+	id_equip
+	id_org
+	text_
+}

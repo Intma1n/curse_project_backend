@@ -1,0 +1,99 @@
+CREATE TYPE user_type AS ENUM ('organizer', 'reenactor', 'default_user'); # типы пользователя - организатор, реконстуктор, обычный пользователь
+
+create table users(
+	id serial primary key,
+	name varchar(50) not null,
+	password varchar(16) not null,
+	surname varchar(50) not null,
+	email varchar(70) not null,
+	type_ user_type not null 
+);
+
+CREATE TYPE equipment_type AS ENUM ('special', 'common'); -- типы оборудования - обычное и специальное
+
+create table equipment(
+	id serial primary key,
+	name varchar(50),
+	access_type user_type not null,
+	is_available bool not null,
+	type_equip equipment_type not null
+);
+create table statement(  -- заявление на получение аппаратуры, текст, айдишник просящего, айдишник аппаратуры, айдишник рассматриваемого гостя
+	id_req int not null,
+	id_equip int not null,
+	text_ text not null,
+	id_org int not null,
+	FOREIGN KEY (id_req) REFERENCES users(id),
+	FOREIGN KEY (id_equip) REFERENCES equipment(id),
+	FOREIGN KEY (id_org) REFERENCES users(id),
+	primary key (id_req, id_equip, id_org)
+);
+
+CREATE TYPE type_budget AS ENUM ('received', 'spent'); 
+create table budget_log(
+	id serial primary key,
+	amount int, -- кол-во денег
+	type_budget type_budget
+);
+create table special_equipment(
+	id serial primary key,
+	name text,
+	id_eq int not null,
+	cost int,
+	FOREIGN KEY (id_eq) REFERENCES equipment(id)
+	
+);
+create table reconstruction(
+	id serial primary key,
+	description text not null,
+	place text not null,
+	payment int not null,
+	id_org int not null,
+	time timestamp not null,
+	FOREIGN KEY (id_org) REFERENCES users(id)
+);
+create table register_for_rec(
+	id_user int not null,
+	id_rec int not null,
+	time timestamp not null,
+	FOREIGN KEY (id_user) REFERENCES users(id),
+	FOREIGN KEY (id_rec) REFERENCES reconstruction(id),
+	primary key(id_user, id_rec)
+);
+create table users_to_equip(
+	id_us int not null,
+	id_eq int not null,
+	id_rec int not null,
+	FOREIGN KEY (id_us) REFERENCES users(id),
+	FOREIGN KEY (id_eq) REFERENCES equipment(id),
+	FOREIGN KEY (id_rec) REFERENCES reconstruction(id),
+	primary key (id_us, id_eq, id_rec)
+);
+
+-- ДАЛЬШЕ ИДУТ ТЕСТОВЫЕ ДАННЫЕ!!!
+insert into users(name, password, surname, email, type_) 
+values ('Организатор1', '123', 'Фамилия_Организатора_1', 'org1@gmail.com','organizer');
+
+insert into users(name, password, surname, email, type_) 
+values ('Организатор2', '123', 'Фамилия_Организатора_2', 'org2@gmail.com','organizer');
+
+insert into users(name, password, surname, email, type_) 
+values ('Организатор3', '123', 'Фамилия_Организатора_3', 'org3@gmail.com','organizer');
+
+insert into users(name, password, surname, email, type_) 
+values ('Реконструктор1', 'фывфыв', 'Фамилия_Реконструктора_1', 'rec1@gmail.com','reenactor');
+
+insert into users(name, password, surname, email, type_) 
+values ('Реконструктор2', 'фывфыв', 'Фамилия_Реконструктора_2', 'rec2@gmail.com','reenactor');
+
+insert into users(name, password, surname, email, type_) 
+values ('Реконструктор3', 'фывфыв', 'Фамилия_Реконструктора_3', 'rec3@gmail.com','reenactor');
+
+insert into users(name, password, surname, email, type_) 
+values ('Зритель1', 'фывфыв', 'Фамилия_Зрителя_1', 'user1@gmail.com','default_user');
+
+insert into users(name, password, surname, email, type_) 
+values ('Зритель2', 'qwer', 'Фамилия_Зрителя_2', 'user2@gmail.com','default_user');
+
+insert into users(name, password, surname, email, type_) 
+values ('Зритель3', 'qwer', 'Фамилия_Зрителя_3', 'user3@gmail.com','default_user');
