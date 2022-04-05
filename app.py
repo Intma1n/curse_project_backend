@@ -64,29 +64,67 @@ def delete_user(id):
         raise ValueError('Bad Request Error')
 
 
-@app.route('/')
+@app.route('/equipment', methods=['GET'])
 def get_equipment():
-    return 'Hello World!'
+    res = singlton.my_equipment.get_all_equipment()
+    return jsonify(res)
 
 
-@app.route('/')
+@app.route('/equipment/<id>', methods=['GET'])
+def get_equipment_by_id(id):
+    if id.isdigit():
+        id = int(id)
+    else:
+        raise ValueError('Bad argument id')
+    res = singlton.my_equipment.get_equipment_by_id(id)
+    return jsonify(res)
+
+
+@app.route('/equipment', methods=["POST"])
 def post_equipment():
-    return 'Hello World!'
+    name = request.values.get('name')
+    access_type = request.values.get('access_type')
+    is_available = request.values.get('is_available')
+    type_equip = request.values.get('type_equip')
+    res = singlton.my_equipment.create_new_equipment(name=name,
+                                                     access_type=access_type,
+                                                     is_available=is_available,
+                                                     type_equip=type_equip)
+    if res:
+        return 'Equipment was created'
+    else:
+        raise ValueError('Bad request')
 
 
-@app.route('/')
-def put_equipment():
-    return 'Hello World!'
+@app.route('/equipment/<id>', methods=["PUT"])
+def put_equipment(id):
+    my_dict = dict()
+    my_dict['name'] = request.values.get('name')
+    my_dict['access_type'] = request.values.get('access_type')
+    my_dict['is_available'] = request.values.get('is_available')
+    my_dict['type_equip'] = request.values.get('type_equip')
+    res = singlton.my_equipment.update_equipment(id=id, args=my_dict)
+    if res:
+        return 'Equipment was updated'
+    else:
+        raise ValueError('Bad request')
 
 
-@app.route('/')
-def delete_equipment():
-    return 'Hello World!'
+@app.route('/equipment/<id>', methods=['DELETE'])
+def delete_user(id):
+    if id.isdigit():
+        id = int(id)
+    res = singlton.my_equipment.delete_equipment(id)
+    if res:
+        return 'Equipment was successfully delete!'
+    else:
+        raise ValueError('Bad Request Error')
 
 
-@app.route('/')
+@app.route('/budget', methods=["GET"])
 def get_budget():
-    return 'Hello World!'
+    res = singlton.my_budget.get_all_budget()
+    return jsonify(res)
 
 
 @app.route('/')
