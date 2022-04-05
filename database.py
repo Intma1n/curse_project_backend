@@ -1,13 +1,16 @@
 import psycopg2
 
+MOCK = True
+
 
 class Base:
     def __init__(self):
-        self.conn = psycopg2.connect(dbname='historical_reconstruction',
+        if not MOCK:
+            self.conn = psycopg2.connect(dbname='historical_reconstruction',
                                      user='postgres',
                                      password='144ntthbssioeay',
                                      host='localhost')
-        self.cursor = self.conn.cursor()
+            self.cursor = self.conn.cursor()
 
 
 class GetUser(Base):
@@ -17,6 +20,8 @@ class GetUser(Base):
         GET
         :return:
         """
+        if MOCK:
+            return ['FirstUser', 'SecondUser']
         self.cursor.execute("SELECT * FROM users")
         res = self.cursor.fetchall()
         return list(res)
@@ -27,6 +32,8 @@ class GetUser(Base):
         :param id:
         :return:
         """
+        if MOCK:
+            return [f'FirstUser{id}']
         self.cursor.execute(f"SELECT * FROM users where id = {id}")
         res = self.cursor.fetchall()
         return list(res)
@@ -38,6 +45,8 @@ class GetUser(Base):
         :return:
         """
         try:
+            if MOCK:
+                return True
             self.cursor.execute(f"delete from users where id = {id}")
             return True
         except Exception:
@@ -54,6 +63,8 @@ class GetUser(Base):
         :return:
         """
         try:
+            if MOCK:
+                return True
             sql = f"insert into users(name, password, surname, email, type_) values ({name}, {password}, '{surname}', '{email}','{type_}');"
             self.cursor.execute(sql)
             return True
@@ -67,6 +78,8 @@ class GetUser(Base):
         :param args:
         :return:
         """
+        if MOCK:
+            return True
         for arg in args:
             if arg == 'name':
                 name = args['name']
