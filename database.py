@@ -248,6 +248,83 @@ class GetEquipment(Base):
             return False
 
 
+class GetReconstruction(Base):
+    def get_all_reconstructions(self):
+        """
+        GET
+        :return:
+        """
+        sql = "select * from reconstruction"
+        self.cursor.execute(sql)
+        res = self.cursor.fetchall()
+        return list(res)
+
+    def get_reconstruction_by_id(self, id):
+        """
+        GET
+        :param id:
+        :return:
+        """
+        self.cursor.execute(f"SELECT * FROM equipment where id = {id}")
+        res = self.cursor.fetchall()
+        return list(res)
+
+    def create_new_reconstruction (self, description, place, payment, id_org, time):
+        """
+        POST
+        :param name:
+        :param password:
+        :param surname:
+        :param email:
+        :param type_:
+        :return:
+        """
+        try:
+            sql = f"insert into equipment(description, place, payment, id_org, time) values " \
+                  f"('{description}', '{place}', '{payment}',id_org, '{time}');"
+            self.cursor.execute(sql)
+            return True
+        except Exception:
+            return False
+
+    def update_reconstruction(self, id, args: dict):
+        """
+        PUT - FIX BUG
+        :param id:
+        :param args:
+        :return:
+        """
+        for arg in args:
+            if arg == 'description':
+                description = args['description']
+                sql = f"update reconstruction set description = '{description}' where id = {id}"
+                self.cursor.execute(sql)
+            elif arg == 'place':
+                place = args['place']
+                sql = f"update reconstruction set place = '{place}' where id = {id}"
+                self.cursor.execute(sql)
+            elif arg == 'id_org':
+                id_org = args['id_org']
+                sql = f"update reconstruction set id_org = '{id_org}' where id = {id}"
+                self.cursor.execute(sql)
+            elif arg == 'time':
+                time = args['time']
+                sql = f"update reconstruction set time = '{time}' where id = {id}"
+                self.cursor.execute(sql)
+
+    def delete_reconstruction(self, id):
+        """
+        DELETE
+        :param id:
+        :return:
+        """
+        try:
+            self.cursor.execute(f"delete from reconstruction where id = {id}")
+            return True
+        except Exception:
+            return False
+
+
 
 def main():
         my_user = GetUser()

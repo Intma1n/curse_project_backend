@@ -111,7 +111,7 @@ def put_equipment(id):
 
 
 @app.route('/equipment/<id>', methods=['DELETE'])
-def delete_user(id):
+def delete_equipment(id):
     if id.isdigit():
         id = int(id)
     res = singlton.my_equipment.delete_equipment(id)
@@ -127,24 +127,63 @@ def get_budget():
     return jsonify(res)
 
 
-@app.route('/')
+@app.route('/reconstructions', methods=['GET'])
 def get_reconstruction():
-    return ''
+    res = singlton.my_reconstruction.get_all_reconstructions()
+    return jsonify(res)
 
 
-@app.route('/')
-def post_reconstruction():
-    return ''
+@app.route('/reconstruction/<id>', methods=['GET'])
+def get_reconstruction_by_id(id):
+    if id.isdigit():
+        id = int(id)
+    else:
+        raise ValueError('Bad argument id')
+    res = singlton.my_reconstruction.get_reconstruction_by_id(id)
+    return jsonify(res)
 
 
-@app.route('/')
-def put_reconstruction():
-    return ''
+@app.route('/reconstructions/', methods=['POST'])
+def post_reconstructions():
+    description = request.values.get('description')
+    place = request.values.get('place')
+    payment = request.values.get('payment')
+    id_org = request.values.get('id_org')
+    time = request.values.get('time')
+    res = singlton.my_reconstruction.create_new_reconstruction(description=description,
+                                                               place=place,
+                                                               payment=payment,
+                                                               id_org=id_org,
+                                                               time=time)
+    if res:
+        return 'User was updated'
+    else:
+        raise ValueError('Bad request')
 
 
-@app.route('/')
-def delete_reconstruction():
-    return ''
+@app.route('/reconstruction/<id>', methods=["PUT"])
+def put_reconstruction(id):
+    my_dict = dict()
+    my_dict['description'] = request.values.get('description')
+    my_dict['place'] = request.values.get('place')
+    my_dict['id_org'] = request.values.get('id_org')
+    my_dict['time'] = request.values.get('time')
+    res = singlton.my_equipment.update_equipment(id=id, args=my_dict)
+    if res:
+        return 'Equipment was updated'
+    else:
+        raise ValueError('Bad request')
+
+
+@app.route('/reconstruction/<id>', methods=['DELETE'])
+def delete_reconstruction(id):
+    if id.isdigit():
+        id = int(id)
+    res = singlton.my_reconstruction.delete_reconstruction(id)
+    if res:
+        return 'Reconstruction was successfully delete!'
+    else:
+        raise ValueError('Bad Request Error')
 
 
 @app.route('/')
