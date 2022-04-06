@@ -325,6 +325,16 @@ class GetReconstruction(Base):
             return False
 
 
+class RegistrationForReconstruction(Base):
+    def reg(self, id_user, id_rec, time):
+        try:
+            sql = f"insert into register_for_rec(id_user, id_rec, time) values " \
+                  f"({id_user}, {id_rec}, '{time}');"
+            self.cursor.execute(sql)
+            return True
+        except Exception:
+            return False
+
 
 def main():
         my_user = GetUser()

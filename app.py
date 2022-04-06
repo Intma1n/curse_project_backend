@@ -186,9 +186,18 @@ def delete_reconstruction(id):
         raise ValueError('Bad Request Error')
 
 
-@app.route('/')
+@app.route('/register_for_reconstruction', methods=['POST'])
 def reg_for_reconstruction():
-    return ''
+    id_user = request.values.get('id_user')
+    id_rec = request.values.get('id_rec')
+    time = request.values.get('time')
+    res = singlton.my_register_for_rec.reg(id_user=id_user,
+                                           id_rec=id_rec,
+                                           time=time)
+    if res:
+        return 'Registration was successfully done'
+    else:
+        raise ValueError('Bad request')
 
 
 @app.route('/')
