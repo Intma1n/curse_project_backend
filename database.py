@@ -7,9 +7,9 @@ class Base:
     def __init__(self):
         if not MOCK:
             self.conn = psycopg2.connect(dbname='historical_reconstruction',
-                                     user='postgres',
-                                     password='144ntthbssioeay',
-                                     host='localhost')
+                                         user='postgres',
+                                         password='144ntthbssioeay',
+                                         host='localhost')
             self.cursor = self.conn.cursor()
 
 
@@ -97,7 +97,8 @@ class GetUser(Base):
                 email = args['email']
                 sql = f"update users set email = '{email}' where id = {id}"
                 self.cursor.execute(sql)
-            elif arg == 'type_' and (args['type_'] =='organizer' or args['type_'] == 'reenactor' or args['type_']=='default_user'):
+            elif arg == 'type_' and (
+                    args['type_'] == 'organizer' or args['type_'] == 'reenactor' or args['type_'] == 'default_user'):
                 type_ = args['type_']
                 sql = f"update users set type_ = '{type_}' where id = {id}"
                 self.cursor.execute(sql)
@@ -109,6 +110,8 @@ class GetBudget(Base):
         GET
         :return:
         """
+        if MOCK:
+            return [{'SOMETHING': 'like budget'}]
         sql = "select * from budget_log"
         self.cursor.execute(sql)
         res = self.cursor.fetchall()
@@ -177,6 +180,15 @@ class GetEquipment(Base):
         GET
         :return:
         """
+        if MOCK:
+            return [{'id': 1,
+                     'name': 'test_name',
+                     'access_type': 'asd',
+                     'type_equip': 'some_type'},
+                    {'id': 2,
+                     'name:' 'test_second_name,'
+                     'access_type': 'asdasd',
+                     'type': 'other_type'}]
         sql = "select * from equipment"
         self.cursor.execute(sql)
         res = self.cursor.fetchall()
@@ -188,6 +200,11 @@ class GetEquipment(Base):
         :param id:
         :return:
         """
+        if MOCK:
+            return [{'id': id,
+                     'name': 'test_name',
+                     'access_type': 'asd',
+                     'type_equip': 'some_type'}]
         self.cursor.execute(f"SELECT * FROM equipment where id = {id}")
         res = self.cursor.fetchall()
         return list(res)
@@ -203,6 +220,8 @@ class GetEquipment(Base):
         :return:
         """
         try:
+            if MOCK:
+                return True
             sql = f"insert into equipment(name, access_type, is_available, type_equip) values " \
                   f"('{name}', '{access_type}', '{is_available}', '{type_equip}');"
             self.cursor.execute(sql)
@@ -217,12 +236,15 @@ class GetEquipment(Base):
         :param args:
         :return:
         """
+        if MOCK:
+            return True
         for arg in args:
             if arg == 'name':
                 name = args['name']
                 sql = f"update equipment set name = '{name}' where id = {id}"
                 self.cursor.execute(sql)
-            elif arg == 'access_type' and (args['access_type'] == 'organizer' or args['access_type'] == 'reenactor', args['default_user'] == 'default_user'):
+            elif arg == 'access_type' and (args['access_type'] == 'organizer' or args['access_type'] == 'reenactor',
+                                           args['default_user'] == 'default_user'):
                 access_type = args['access_type']
                 sql = f"update equipment set access_type = '{access_type}' where id = {id}"
                 self.cursor.execute(sql)
@@ -242,6 +264,8 @@ class GetEquipment(Base):
         :return:
         """
         try:
+            if MOCK:
+                return True
             self.cursor.execute(f"delete from budget_log where id = {id}")
             return True
         except Exception:
@@ -254,6 +278,20 @@ class GetReconstruction(Base):
         GET
         :return:
         """
+        if MOCK:
+            return [{'id': 1,
+                     'description': 'its my desc',
+                     'place': 'test_place',
+                     'payment': 'some method of this',
+                     'id_org': 1,
+                     'time': 'time1'},
+                    {'id': 2,
+                     'description': 'its not my desc',
+                     'place': 'test_new_place',
+                     'payment': 'some asdasdmethod of this',
+                     'id_org': 2,
+                     'time': 'time2'}
+                    ]
         sql = "select * from reconstruction"
         self.cursor.execute(sql)
         res = self.cursor.fetchall()
@@ -265,11 +303,18 @@ class GetReconstruction(Base):
         :param id:
         :return:
         """
+        if MOCK:
+            return [{'id': id,
+                     'description': 'its my desc',
+                     'place': 'test_place',
+                     'payment': 'some method of this',
+                     'id_org': 1,
+                     'time': 'time1'}]
         self.cursor.execute(f"SELECT * FROM equipment where id = {id}")
         res = self.cursor.fetchall()
         return list(res)
 
-    def create_new_reconstruction (self, description, place, payment, id_org, time):
+    def create_new_reconstruction(self, description, place, payment, id_org, time):
         """
         POST
         :param name:
@@ -280,6 +325,8 @@ class GetReconstruction(Base):
         :return:
         """
         try:
+            if MOCK:
+                return True
             sql = f"insert into equipment(description, place, payment, id_org, time) values " \
                   f"('{description}', '{place}', '{payment}',id_org, '{time}');"
             self.cursor.execute(sql)
@@ -318,6 +365,8 @@ class GetReconstruction(Base):
         :param id:
         :return:
         """
+        if MOCK:
+            return True
         try:
             self.cursor.execute(f"delete from reconstruction where id = {id}")
             return True
@@ -334,6 +383,7 @@ class RegistrationForReconstruction(Base):
             return True
         except Exception:
             return False
+
 
 class GetStatement(Base):
     def create_statement(self, id_req, id_equip, id_org, text_):
@@ -356,12 +406,12 @@ class GetStatement(Base):
 
 
 def main():
-        my_user = GetUser()
-        dict_change = {'email': 'asdasdasd@gmail.com', 'name': 'ash'}
-        #my_user.update_new_user(2, dict_change)
-        res = my_user.get_user_by_id(2)
-        print(res)
+    my_user = GetUser()
+    dict_change = {'email': 'asdasdasd@gmail.com', 'name': 'ash'}
+    # my_user.update_new_user(2, dict_change)
+    res = my_user.get_user_by_id(2)
+    print(res)
+
 
 if __name__ == '__main__':
     main()
-

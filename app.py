@@ -20,7 +20,7 @@ def get_user_by_id(id):
     return jsonify(res)
 
 
-@app.route('/users/', methods=['POST'])
+@app.route('/users', methods=['POST'])
 def post_users():
     name = request.values.get('name')
     password = request.values.get('password')
