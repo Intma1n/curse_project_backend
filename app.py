@@ -200,9 +200,20 @@ def reg_for_reconstruction():
         raise ValueError('Bad request')
 
 
-@app.route('/')
+@app.route('/statement', methods=['POST'])
 def post_statement():
-    return ''
+    id_req = request.values.get('id_req')
+    id_equip = request.values.get('id_equip')
+    id_org = request.values.get('id_org')
+    text_ = request.values.get('text_')
+    res = singlton.my_statement.create_statement(id_req=id_req,
+                                                 id_equip=id_equip,
+                                                 id_org=id_org,
+                                                 text_=text_)
+    if res:
+        return 'Registration for statement was done'
+    else:
+        raise ValueError('Bad request')
 
 
 if __name__ == '__main__':

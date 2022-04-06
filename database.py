@@ -335,6 +335,25 @@ class RegistrationForReconstruction(Base):
         except Exception:
             return False
 
+class GetStatement(Base):
+    def create_statement(self, id_req, id_equip, id_org, text_):
+        """
+        POST
+        :param name:
+        :param password:
+        :param surname:
+        :param email:
+        :param type_:
+        :return:
+        """
+        try:
+            sql = f"insert into statement(id_req, id_equip, id_org, id_org, time) values " \
+                  f"(id_req, id_equip, id_org,id_org, '{text_}');"
+            self.cursor.execute(sql)
+            return True
+        except Exception:
+            return False
+
 
 def main():
         my_user = GetUser()

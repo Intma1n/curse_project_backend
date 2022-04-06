@@ -1,4 +1,4 @@
-from database import GetUser, GetBudget, GetEquipment, GetReconstruction, RegistrationForReconstruction
+from database import GetUser, GetBudget, GetEquipment, GetReconstruction, RegistrationForReconstruction, GetStatement
 
 
 class Singleton:
@@ -8,6 +8,7 @@ class Singleton:
         self.my_equipment = GetEquipment()
         self.my_reconstruction = GetReconstruction()
         self.my_register_for_rec = RegistrationForReconstruction()
+        self.my_statement = GetStatement()
 
 
 singlton = Singleton()
