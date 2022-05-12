@@ -1,19 +1,29 @@
 import psycopg2
 
-MOCK = True
+MOCK = False
 
 
 class Base:
     def __init__(self):
         if not MOCK:
-            self.conn = psycopg2.connect(dbname='historical_reconstruction',
-                                         user='postgres',
-                                         password='144ntthbssioeay',
-                                         host='localhost')
+            self.conn = psycopg2.connect(dbname='',
+                                         user='',
+                                         password='',
+                                         host='')
             self.cursor = self.conn.cursor()
 
 
 class GetUser(Base):
+
+    def format_user(self, user):
+        return {
+            'id': user[0],
+            'name': user[1],
+            'password': user[2],
+            'surname': user[3],
+            'email': user[4],
+            'type_of_user': user[5]
+        }
 
     def get_all_user(self):
         """
@@ -23,8 +33,12 @@ class GetUser(Base):
         if MOCK:
             return ['FirstUser', 'SecondUser']
         self.cursor.execute("SELECT * FROM users")
-        res = self.cursor.fetchall()
-        return list(res)
+        list_users = list(self.cursor.fetchall())
+        list_result = list()
+        for user in list_users:
+            dict_res = self.format_user(user)
+            list_result.append(dict_res)
+        return list_result
 
     def get_user_by_id(self, id):
         """
@@ -35,8 +49,8 @@ class GetUser(Base):
         if MOCK:
             return [f'FirstUser{id}']
         self.cursor.execute(f"SELECT * FROM users where id = {id}")
-        res = self.cursor.fetchall()
-        return list(res)
+        res = list(self.cursor.fetchall())[0]
+        return self.format_user(res)
 
     def delete_user_by_id(self, id):
         """
@@ -49,7 +63,8 @@ class GetUser(Base):
                 return True
             self.cursor.execute(f"delete from users where id = {id}")
             return True
-        except Exception:
+        except Exception as err:
+            print(f'its exception into deleting = {err}')
             return False
 
     def create_new_user(self, name, password, surname, email, type_):
@@ -65,10 +80,12 @@ class GetUser(Base):
         try:
             if MOCK:
                 return True
-            sql = f"insert into users(name, password, surname, email, type_) values ({name}, {password}, '{surname}', '{email}','{type_}');"
+            sql = f"insert into users(name, password, surname, email, type_) values ('{name}', '{password}', '{surname}', '{email}','{type_}');"
             self.cursor.execute(sql)
+            self.conn.commit()
             return True
-        except Exception:
+        except Exception as err:
+            print(f'Error into create_new_user = {err}')
             return False
 
     def update_user(self, id, args: dict):
@@ -80,28 +97,36 @@ class GetUser(Base):
         """
         if MOCK:
             return True
-        for arg in args:
-            if arg == 'name':
+        try:
+            if args['name']:
                 name = args['name']
                 sql = f"update users set name = '{name}' where id = {id}"
                 self.cursor.execute(sql)
-            elif arg == 'password':
+                self.conn.commit()
+            if args['password']:
                 password = args['password']
                 sql = f"update users set password = '{password}' where id = {id}"
                 self.cursor.execute(sql)
-            elif arg == 'surname':
+                self.conn.commit()
+            if args['surname']:
                 surname = args['surname']
                 sql = f"update users set email = '{surname}' where id = {id}"
                 self.cursor.execute(sql)
-            elif arg == 'email':
+                self.conn.commit()
+            if args['email']:
                 email = args['email']
                 sql = f"update users set email = '{email}' where id = {id}"
                 self.cursor.execute(sql)
-            elif arg == 'type_' and (
-                    args['type_'] == 'organizer' or args['type_'] == 'reenactor' or args['type_'] == 'default_user'):
+                self.conn.commit()
+            if args['type_'] and args['type_'] in ('organizer', 'reenactor''default_user'):
                 type_ = args['type_']
                 sql = f"update users set type_ = '{type_}' where id = {id}"
                 self.cursor.execute(sql)
+                self.conn.commit()
+            return True
+        except Exception as err:
+            print(f'Error in put_user = {err}')
+            return False
 
 
 class GetBudget(Base):
