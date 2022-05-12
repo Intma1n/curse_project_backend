@@ -200,6 +200,15 @@ class GetBudget(Base):
 
 
 class GetEquipment(Base):
+
+    def format_equipment(self, equipment):
+        return {
+            'id': equipment[0],
+            'name': equipment[1],
+            'is_available': equipment[2],
+            'type_equip': equipment[3]
+        }
+
     def get_all_equipment(self):
         """
         GET
@@ -216,8 +225,11 @@ class GetEquipment(Base):
                      'type': 'other_type'}]
         sql = "select * from equipment"
         self.cursor.execute(sql)
-        res = self.cursor.fetchall()
-        return list(res)
+        list_equipment = list(self.cursor.fetchall())
+        res_list = list()
+        for equipment in list_equipment:
+            res_list.append(self.format_equipment(equipment))
+        return list(res_list)
 
     def get_equipment_by_id(self, id):
         """
@@ -231,8 +243,8 @@ class GetEquipment(Base):
                      'access_type': 'asd',
                      'type_equip': 'some_type'}]
         self.cursor.execute(f"SELECT * FROM equipment where id = {id}")
-        res = self.cursor.fetchall()
-        return list(res)
+        res = list(self.cursor.fetchall())[0]
+        return self.format_equipment(res)
 
     def create_new_equipment(self, name, access_type, is_available, type_equip):
         """
@@ -250,8 +262,10 @@ class GetEquipment(Base):
             sql = f"insert into equipment(name, access_type, is_available, type_equip) values " \
                   f"('{name}', '{access_type}', '{is_available}', '{type_equip}');"
             self.cursor.execute(sql)
+            self.conn.commit()
             return True
-        except Exception:
+        except Exception as err:
+            print(f'error in creating equipment = {err}')
             return False
 
     def update_equipment(self, id, args: dict):
@@ -263,24 +277,31 @@ class GetEquipment(Base):
         """
         if MOCK:
             return True
-        for arg in args:
-            if arg == 'name':
+        try:
+            if args['name']:
                 name = args['name']
                 sql = f"update equipment set name = '{name}' where id = {id}"
                 self.cursor.execute(sql)
-            elif arg == 'access_type' and (args['access_type'] == 'organizer' or args['access_type'] == 'reenactor',
-                                           args['default_user'] == 'default_user'):
+                self.conn.commit()
+            if args['access_type'] and args['access_type'] in ('organizer', 'reenactor', 'default_user'):
                 access_type = args['access_type']
                 sql = f"update equipment set access_type = '{access_type}' where id = {id}"
                 self.cursor.execute(sql)
-            elif arg == 'is_available':
+                self.conn.commit()
+            if args['is_available']:
                 is_available = args['is_available']
                 sql = f"update equipment set is_available = '{is_available}' where id = {id}"
                 self.cursor.execute(sql)
-            elif arg == 'type_equip' and (args['type_equip'] == 'special' or args['type_equip'] == 'common'):
+                self.conn.commit()
+            if args['type_equip'] and args['type_equip'] in ('special', 'common'):
                 type_equip = args['type_equip']
                 sql = f"update equipment set type_equip = '{type_equip}' where id = {id}"
                 self.cursor.execute(sql)
+                self.conn.commit()
+            return True
+        except Exception as err:
+            print(f'its put equipment error = {err}')
+            return False
 
     def delete_equipment(self, id):
         """
