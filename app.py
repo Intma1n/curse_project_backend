@@ -4,6 +4,16 @@ from like_controller import singlton
 app = Flask(__name__)
 
 
+@app.route('/register_for_reconstruction', methods=["GET"])
+def get_register_for_rec():
+    res = singlton.my_register_for_rec.get()
+    if res:
+        return jsonify(res)
+    else:
+        raise ValueError('Bad data')
+
+
+
 @app.route('/users', methods=['GET'])
 def get_users():
     res = singlton.my_user.get_all_user()

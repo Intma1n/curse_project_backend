@@ -376,6 +376,7 @@ class GetReconstruction(Base):
             sql = f"insert into equipment(description, place, payment, id_org, time) values " \
                   f"('{description}', '{place}', '{payment}',id_org, '{time}');"
             self.cursor.execute(sql)
+            self.conn.commit()
             return True
         except Exception:
             return False
@@ -426,8 +427,19 @@ class RegistrationForReconstruction(Base):
             sql = f"insert into register_for_rec(id_user, id_rec, time) values " \
                   f"({id_user}, {id_rec}, '{time}');"
             self.cursor.execute(sql)
+            self.conn.commit()
             return True
         except Exception:
+            return False
+
+    def get(self):
+        try:
+            sql = 'select * from register_for_rec'
+            self.cursor.execute(sql)
+            res = list(self.cursor.fetchall())
+            return res
+        except Exception as err:
+            print(f'its get reg for rec error = {err}')
             return False
 
 
@@ -446,6 +458,7 @@ class GetStatement(Base):
             sql = f"insert into statement(id_req, id_equip, id_org, id_org, time) values " \
                   f"(id_req, id_equip, id_org,id_org, '{text_}');"
             self.cursor.execute(sql)
+            self.conn.commit()
             return True
         except Exception:
             return False
