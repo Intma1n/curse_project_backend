@@ -1,3 +1,5 @@
+import parser
+
 from flask import Flask
 from flask_restful import reqparse, abort, Api, Resource, request
 from database import GetUser
@@ -15,8 +17,6 @@ TODOS = {
 def abort_if_todo_doesnt_exist(todo_id):
     if todo_id not in TODOS:
         abort(404, message="Todo {} doesn't exist".format(todo_id))
-
-
 
 
 # Todo
@@ -63,9 +63,6 @@ class User(Resource):
         pass
 
 
-
-
-
 # TodoList
 # shows a list of all todos, and lets you POST to add new tasks
 class TodoList(Resource):
@@ -78,6 +75,7 @@ class TodoList(Resource):
         todo_id = 'todo%i' % todo_id
         TODOS[todo_id] = {'task': args['task']}
         return TODOS[todo_id], 201
+
 
 ##
 ## Actually setup the Api resource routing here

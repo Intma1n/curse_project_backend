@@ -6,19 +6,19 @@ MOCK = False
 class Base:
     def __init__(self):
         if not MOCK:
-            self.conn = psycopg2.connect(dbname='',
-                                         user='',
-                                         password='',
-                                         host='')
+            self.conn = psycopg2.connect(dbname='historical_reconstruction',
+                                         user='postgres',
+                                         password='144ntthbssioeay',
+                                         host='localhost')
             self.cursor = self.conn.cursor()
 
 
 class GetUser(Base):
     def __init__(self):
-        self.cursor = psycopg2.connect(dbname='',
-                                       user='organizer',
-                                       pasword='1111',
-                                       host='')
+        self.conn = psycopg2.connect(dbname='historical_reconstruction',
+                                     user='organizer',
+                                     password='1111',
+                                     host='localhost')
         self.cursor = self.conn.cursor()
 
     def format_user(self, user):
@@ -86,12 +86,11 @@ class GetUser(Base):
         try:
             if MOCK:
                 return True
-            sql = f"insert into users(name, password, surname, email, type_) values ('{name}', '{password}', '{surname}', '{email}','{type_}');"
+            sql = f"insert into users(name, password, surname, email, type_) values ('{name}', '{password}', '{surname}', '{email}', '{type_}');"
             self.cursor.execute(sql)
             self.conn.commit()
             return True
         except Exception as err:
-            print(f'Error into create_new_user = {err}')
             return False
 
     def update_user(self, id, args: dict):
@@ -137,10 +136,10 @@ class GetUser(Base):
 
 class GetBudget(Base):
     def __init__(self):
-        self.cursor = psycopg2.connect(dbname='',
-                                       user='organizer',
-                                       pasword='1111',
-                                       host='')
+        self.conn = psycopg2.connect(dbname='historical_reconstruction',
+                                     user='organizer',
+                                     password='1111',
+                                     host='localhost')
         self.cursor = self.conn.cursor()
 
     def get_all_budget(self):
@@ -215,10 +214,10 @@ class GetBudget(Base):
 class GetEquipment(Base):
 
     def __init__(self):
-        self.cursor = psycopg2.connect(dbname='',
-                                       user='reenactor',
-                                       pasword='2222',
-                                       host='')
+        self.conn = psycopg2.connect(dbname='historical_reconstruction',
+                                     user='reenactor',
+                                     password='2222',
+                                     host='localhost')
         self.cursor = self.conn.cursor()
 
     def format_equipment(self, equipment):
@@ -393,12 +392,13 @@ class GetReconstruction(Base):
         try:
             if MOCK:
                 return True
-            sql = f"insert into equipment(description, place, payment, id_org, time) values " \
-                  f"('{description}', '{place}', '{payment}',id_org, '{time}');"
+            sql = f"insert into reconstruction(description, place, payment, id_org, time) values " \
+                  f"('{description}', '{place}', '{payment}','{id_org}', '{time}');"
             self.cursor.execute(sql)
             self.conn.commit()
             return True
-        except Exception:
+        except Exception as err:
+            print(err)
             return False
 
     def update_reconstruction(self, id, args: dict):
@@ -443,10 +443,10 @@ class GetReconstruction(Base):
 
 class RegistrationForReconstruction(Base):
     def __init__(self):
-        self.cursor = psycopg2.connect(dbname='',
-                                       user='default_user',
-                                       pasword='3333',
-                                       host='')
+        self.conn = psycopg2.connect(dbname='historical_reconstruction',
+                                     user='default_user',
+                                     password='3333',
+                                     host='localhost')
         self.cursor = self.conn.cursor()
 
     def reg(self, id_user, id_rec, time):
@@ -482,7 +482,7 @@ class GetStatement(Base):
         :return:
         """
         try:
-            sql = f"insert into statement(id_req, id_equip, id_org, id_org, time) values " \
+            sql = f"insert into statement(id_req, id_equip, id_org, text_) values " \
                   f"({id_req}, {id_equip}, {id_org}, '{text_}');"
             self.cursor.execute(sql)
             self.conn.commit()

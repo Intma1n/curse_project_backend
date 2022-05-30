@@ -1,14 +1,19 @@
 from flask import Flask, jsonify, request
 from like_controller import singlton
+from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
+CORS(app)
 
 
 @app.route('/register_for_reconstruction', methods=["GET"])
 def get_register_for_rec():
     res = singlton.my_register_for_rec.get()
+    response = jsonify(res)
+    response.headers.add("Access-Control-Allow-Origin", "*")
+
     if res:
-        return jsonify(res)
+        return response
     else:
         raise ValueError('Bad data')
 
@@ -16,7 +21,8 @@ def get_register_for_rec():
 @app.route('/users', methods=['GET'])
 def get_users():
     res = singlton.my_user.get_all_user()
-    return jsonify(res)
+    response = jsonify(res)
+    return response
 
 
 @app.route('/user/<id>', methods=['GET'])
@@ -26,25 +32,30 @@ def get_user_by_id(id):
     else:
         raise ValueError('Bad argument id')
     res = singlton.my_user.get_user_by_id(id)
-    return jsonify(res)
+    response = jsonify(res)
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
 
 
 @app.route('/users', methods=['POST'])
+@cross_origin()
 def post_users():
-    name = request.values.get('name')
-    password = request.values.get('password')
-    surname = request.values.get('surname')
-    email = request.values.get('email')
-    type_ = request.values.get('type_')
+    print(request.json)
+    name = request.json.get('name')
+    password = request.json.get('password')
+    surname = request.json.get('surname')
+    email = request.json.get('email')
+    type_ = request.json.get('type_')
     res = singlton.my_user.create_new_user(name=name,
                                            surname=surname,
                                            password=password,
                                            email=email,
                                            type_=type_)
     if res:
-        return 'User was updated'
+        return jsonify(type_, email)
     else:
-        raise ValueError('Bad request')
+        # raise ValueError('Bad request')
+        return request
 
 
 @app.route('/users/<id>', methods=['PUT'])
@@ -76,25 +87,29 @@ def delete_user(id):
 @app.route('/equipment', methods=['GET'])
 def get_equipment():
     res = singlton.my_equipment.get_all_equipment()
-    return jsonify(res)
+    response = jsonify(res)
+    return response
 
 
-@app.route('/equipment/<id>', methods=['GET'])
-def get_equipment_by_id(id):
-    if id.isdigit():
-        id = int(id)
+@app.route('/equipment/<eq_id>', methods=['GET'])
+@cross_origin()
+def get_equipment_by_id(eq_id):
+    if eq_id.isdigit():
+        eq_id = int(eq_id)
     else:
         raise ValueError('Bad argument id')
     res = singlton.my_equipment.get_equipment_by_id(id)
-    return jsonify(res)
+
+    return res
 
 
 @app.route('/equipment', methods=["POST"])
+@cross_origin()
 def post_equipment():
-    name = request.values.get('name')
-    access_type = request.values.get('access_type')
-    is_available = request.values.get('is_available')
-    type_equip = request.values.get('type_equip')
+    name = request.json.get('name')
+    access_type = request.json.get('access_type')
+    is_available = request.json.get('is_available')
+    type_equip = request.json.get('type_equip')
     res = singlton.my_equipment.create_new_equipment(name=name,
                                                      access_type=access_type,
                                                      is_available=is_available,
@@ -139,7 +154,9 @@ def get_budget():
 @app.route('/reconstructions', methods=['GET'])
 def get_reconstruction():
     res = singlton.my_reconstruction.get_all_reconstructions()
-    return jsonify(res)
+    response = jsonify(res)
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
 
 
 @app.route('/reconstruction/<id>', methods=['GET'])
@@ -149,23 +166,26 @@ def get_reconstruction_by_id(id):
     else:
         raise ValueError('Bad argument id')
     res = singlton.my_reconstruction.get_reconstruction_by_id(id)
-    return jsonify(res)
+    response = jsonify(res)
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
 
 
 @app.route('/reconstructions/', methods=['POST'])
+@cross_origin()
 def post_reconstructions():
-    description = request.values.get('description')
-    place = request.values.get('place')
-    payment = request.values.get('payment')
-    id_org = request.values.get('id_org')
-    time = request.values.get('time')
+    description = request.json.get('description')
+    place = request.json.get('place')
+    payment = request.json.get('payment')
+    id_org = request.json.get('id_org')
+    time = request.json.get('time')
     res = singlton.my_reconstruction.create_new_reconstruction(description=description,
                                                                place=place,
                                                                payment=payment,
                                                                id_org=id_org,
                                                                time=time)
     if res:
-        return 'User was updated'
+        return 'Reconstruction was updated'
     else:
         raise ValueError('Bad request')
 
@@ -196,25 +216,28 @@ def delete_reconstruction(id):
 
 
 @app.route('/register_for_reconstruction', methods=['POST'])
+@cross_origin()
 def reg_for_reconstruction():
-    id_user = request.values.get('id_user')
-    id_rec = request.values.get('id_rec')
-    time = request.values.get('time')
+    id_user = request.json.get('id_user')
+    id_rec = request.json.get('id_rec')
+    time = request.json.get('time')
     res = singlton.my_register_for_rec.reg(id_user=id_user,
                                            id_rec=id_rec,
                                            time=time)
     if res:
         return 'Registration was successfully done'
     else:
-        raise ValueError('Bad request')
+        # raise ValueError('Bad request')
+        return 'sdfsdf'
 
 
 @app.route('/statement', methods=['POST'])
+@cross_origin()
 def post_statement():
-    id_req = request.values.get('id_req')
-    id_equip = request.values.get('id_equip')
-    id_org = request.values.get('id_org')
-    text_ = request.values.get('text_')
+    id_req = request.json.get('id_req')
+    id_equip = request.json.get('id_equip')
+    id_org = request.json.get('id_org')
+    text_ = request.json.get('text_')
     res = singlton.my_statement.create_statement(id_req=id_req,
                                                  id_equip=id_equip,
                                                  id_org=id_org,
@@ -222,7 +245,8 @@ def post_statement():
     if res:
         return 'Registration for statement was done'
     else:
-        raise ValueError('Bad request')
+        # raise ValueError('Bad request')
+        return 'sdfsd'
 
 
 if __name__ == '__main__':

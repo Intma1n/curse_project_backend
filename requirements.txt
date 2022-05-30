@@ -1,2 +1,4 @@
-flask
+flask~=1.1.2
 psycopg2-binary
+cors~=1.0.1
+flask_cors
