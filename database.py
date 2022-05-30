@@ -14,6 +14,12 @@ class Base:
 
 
 class GetUser(Base):
+    def __init__(self):
+        self.cursor = psycopg2.connect(dbname='',
+                                       user='organizer',
+                                       pasword='1111',
+                                       host='')
+        self.cursor = self.conn.cursor()
 
     def format_user(self, user):
         return {
@@ -130,6 +136,13 @@ class GetUser(Base):
 
 
 class GetBudget(Base):
+    def __init__(self):
+        self.cursor = psycopg2.connect(dbname='',
+                                       user='organizer',
+                                       pasword='1111',
+                                       host='')
+        self.cursor = self.conn.cursor()
+
     def get_all_budget(self):
         """*
         GET
@@ -200,6 +213,13 @@ class GetBudget(Base):
 
 
 class GetEquipment(Base):
+
+    def __init__(self):
+        self.cursor = psycopg2.connect(dbname='',
+                                       user='reenactor',
+                                       pasword='2222',
+                                       host='')
+        self.cursor = self.conn.cursor()
 
     def format_equipment(self, equipment):
         return {
@@ -422,6 +442,13 @@ class GetReconstruction(Base):
 
 
 class RegistrationForReconstruction(Base):
+    def __init__(self):
+        self.cursor = psycopg2.connect(dbname='',
+                                       user='default_user',
+                                       pasword='3333',
+                                       host='')
+        self.cursor = self.conn.cursor()
+
     def reg(self, id_user, id_rec, time):
         try:
             sql = f"insert into register_for_rec(id_user, id_rec, time) values " \
@@ -456,7 +483,7 @@ class GetStatement(Base):
         """
         try:
             sql = f"insert into statement(id_req, id_equip, id_org, id_org, time) values " \
-                  f"(id_req, id_equip, id_org,id_org, '{text_}');"
+                  f"({id_req}, {id_equip}, {id_org}, '{text_}');"
             self.cursor.execute(sql)
             self.conn.commit()
             return True

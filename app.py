@@ -13,7 +13,6 @@ def get_register_for_rec():
         raise ValueError('Bad data')
 
 
-
 @app.route('/users', methods=['GET'])
 def get_users():
     res = singlton.my_user.get_all_user()
